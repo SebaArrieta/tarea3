@@ -2,6 +2,18 @@
 
 using namespace std;
 
+/*****
+* Graph* csvToGraph
+******
+* Función encargada de pasar un texto formato csv, en un grafo. 
+* Recorre el texto obteniendo los id, los pesos de los arcos y los nombres de los vertices para pasarselos al grafo, el que los tomara mediante una matriz y una tabla hash.
+******
+* Input:
+* No tiene
+******
+* Returns:
+* Graph*, retorna un puntero de un grafo con la conversion de csv a grafo ya lista
+*****/
 Graph* csvToGraph(){
     ifstream csv;
     string line = "";
@@ -81,7 +93,18 @@ Graph* csvToGraph(){
     return graph; //retorna un grafo creado a partir de los datos del csv
 }   
 
-int mainChar(Graph* graph){
+/*****
+* tVertice mainChar
+******
+* Función engargada de obtener el vertice de mayor grado dentro del grafo. El vertice corresponderá al personaje principal.
+******
+* Input:
+* Graph* graph : Puntero de grafo que contiene toda la información del grafo a trabajar.
+******
+* Returns:
+* tVertice, retorna numero de vertice del personaje principal (el grafo con más grado)
+*****/
+tVertice mainChar(Graph* graph){
     data info;
     int gradoMayor = -INFINITO;
     int numVertice;
@@ -98,7 +121,21 @@ int mainChar(Graph* graph){
     return numVertice;
 }
 
-int secRelevante(Graph* graph, int principal, int** matriz){
+/*****
+* tVertice secRelevante
+******
+* Función encargada de buscar el mayor camino de menor costo respecto al principal.
+* Esto mediante una matriz que contiene los menores costos pasada previamente por parametro, la cual se recorrerá y buscará el mayor
+******
+* Input:
+* Graph* graph : Puntero de grafo que contiene toda la información del grafo a trabajar.
+* tVertice principal : numero del vertice del personaje principal
+* int** matriz : puntero doble que corresponde a una matriz de [n][n], la cual contiene los menores costos entre cada par de vertices
+******
+* Returns:
+* tVertice, retorna numero del personaje secundario mas relevante
+*****/
+int secRelevante(Graph* graph, tVertice principal, int** matriz){
     int size = graph->nVertex();
     int mayor = -INFINITO;
     int secundario;
@@ -114,12 +151,37 @@ int secRelevante(Graph* graph, int principal, int** matriz){
     return secundario;
 }
 
+/*****
+* double factorial
+******
+* Función que mediante recursividad entre el factorial de un numero
+******
+* Input:
+* int n : numero del factorial a calcular
+******
+* Returns:
+* double, retorna factorial del numero entregado por parametro
+*****/
 double factorial(int n){
     if (n > 1)
         return factorial(n-1) * n;
     return 1;
 }
 
+/*****
+* double averageDistance
+******
+* Funcion que calcula la longitud del camino promedio.
+* Esto mediante una suma de 1 en 1 de los caminos de menores costos que existan.
+* La suma se divide por la combinaciones de pares de vertices.
+******
+* Input:
+* Graph* graph : Puntero de grafo que contiene toda la información del grafo a trabajar.
+* int **matriz : puntero doble que corresponde a una matriz de [n][n], la cual contiene los menores costos entre cada par de vertices.
+******
+* Returns:
+* double, retorna longitud del camino promedio
+*****/
 double averageDistance(Graph* graph, int **matriz){
     double suma = 0;
     double combinatoria;
@@ -140,6 +202,20 @@ double averageDistance(Graph* graph, int **matriz){
     return suma;
 }
 
+/*****
+* double averageWeightedDistance
+******
+* Funcion que calcula la longitud del camino promedio con pesos.
+* Esto mediante una suma de los caminos de menor costo entre cada par de vertice.
+* La suma se divide por la suma de los pesos de cada arco.
+******
+* Input:
+* Graph* graph: Puntero de grafo que contiene toda la información del grafo a trabajar.
+* int **matriz : puntero doble que corresponde a una matriz de [n][n], la cual contiene los menores costos entre cada par de vertices.
+******
+* Returns:
+* double, retorna longitud del camino promedio con pesos
+*****/
 double averageWeightedDistance(Graph* graph, int** matriz){
     double suma = 0;
     double pesoArcos = 0;
@@ -167,6 +243,18 @@ double averageWeightedDistance(Graph* graph, int** matriz){
     return suma;
 }
 
+/*****
+* void salida
+******
+* Función encargada de mostrar en pantalla: personaje principal, personaje secundario más relevante, diametro y diametro con pesos.
+* Esto lo hace mediante llamadas a otras funciones para obtener los datos requeridos
+******
+* Input:
+* No tiene
+******
+* Returns:
+* void
+*****/
 void salida(){
     //se crea un grafo mediante el csv y obtiene datos
     Graph* grafo = csvToGraph();
@@ -183,8 +271,8 @@ void salida(){
     grafo->floydsWarshalls(costosMin); 
 
     //se obtienen datos requeridos mediante funciones
-    int principal = mainChar(grafo);
-    int secRel = secRelevante(grafo, principal, costosMin);
+    tVertice principal = mainChar(grafo);
+    tVertice secRel = secRelevante(grafo, principal, costosMin);
     double diametro = averageDistance(grafo,costosMin);
     double diametroPeso = averageWeightedDistance(grafo,costosMin);
 
@@ -207,6 +295,18 @@ void salida(){
 
 }
 
+/*****
+* int main
+******
+* Función main accedida al iniciar el programa encargada de llamar a la funcion salida
+******
+* Input:
+* No tiene
+******
+* Returns:
+* int, int que indica que el prograba acaba, no es necesario 
+*****/
 int main(){
     salida();
+    return 0;
 }
