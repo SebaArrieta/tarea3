@@ -71,28 +71,31 @@ y asi retornar la suma total de sus partes.
         int contador= 0;
         string word = "";
         for(int i = 0; i < (termino.length() - (termino.length()%3)); i++){
-            if((i+1)%3 == 0){
-                contador += stoi(word);
-                word = "";
-            }
 
             int wordInt = termino[i];
             for(int j = 0; j < to_string(wordInt).length(); j++){
                 word+= to_string(wordInt)[j];
+            }
+            
+            if((i+1)%3 == 0){
+                contador += stoi(word);
+                word = "";
             }
 
         }
 
         word = "";
         int res = (termino.length() + (termino.length()%3)) - termino.length();
-        for(int i = termino.length() - res + 1; i < termino.length()+1 - res; i++){
+        for(int i = termino.length() - res; i < termino.length(); i++){
             int wordInt = termino[i];
             for(int j = 0; j < to_string(wordInt).length(); j++){
                 word+= to_string(wordInt)[j];
             }
-            contador += stoi(word);
         }
 
+        if(word.length() > 0)
+            contador += stoi(word);
+        
         return contador % M;
     }
    
