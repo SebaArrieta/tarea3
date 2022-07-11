@@ -29,6 +29,19 @@ ranura HT[M];
         int MissCount;
         int AcCount ;
     public:
+        
+/*****
+* void CacheDiccionario
+******
+* Esta funcion inicializa el TDA estableciendo las variables iniciales en 0
+******
+* Input:
+* 
+* .......
+******
+* Returns:
+* 
+*****/
 
     CacheDiccionario(){
         nElem = 0;
@@ -40,6 +53,20 @@ ranura HT[M];
         MissCount = 0;
         AcCount = 0;
     }
+        
+ /*****
+* int h
+******
+* La funcion h da la posicion inicial de algun elemento a la hora de incertarlo en el hashing, para esto divide el termino entre tres para sumar la equivalencia en ascii 
+y asi retornar la suma total de sus partes.
+******
+* Input:
+* string termino : el termino es la palabra a ingresar en el diccionario y funciona como la clave del elemento para el hashing.
+* .......
+******
+* Returns:
+* int, la suma de las distintas secciones en la que se dividio la palabra seleccionada.
+*****/
 
     int h(string termino){
         int contador= 0;
@@ -69,10 +96,38 @@ ranura HT[M];
 
         return contador % M;
     }
+   
+ /*****
+* unsigned long p
+******
+* la funcion p resuelve las colisiones que podrian ocurrir durante la insercion de los elementos al hashing, utilizando .
+******
+* Input:
+* string termino : termino seleccionado que colisiona en la insercion del hashing.
+  int i: hace referencia a la cantidad de colisiones que han ocurrido luego de implementar la funcion varias veces.
+* .......
+******
+* Returns:
+* int, retorna la cantidad de espacios que debe avanzar para establecer la nueva posicion del elemento.
+*****/
 
     unsigned long p(string termino, int i){
         return i*i*2 + 5*i + 1;
     }
+  
+  /*****
+* bool query
+******
+* esta funcion se encarga de consultar los elementos en el diccionario y tambien para comprobar su existencia.
+******
+* Input:
+* string termino : termino seleccionado a buscar en el diccionario.
+  string &significado: string por donde pasara la definicion del termino en caso de encontrarse.
+* .......
+******
+* Returns:
+* bool, retorna true si se encuentra el temrino en el diccionario en caso contrario se retorna un false.
+*****/
 
     bool query(string termino, string &significado){
         Ctotal += 1;
@@ -100,6 +155,19 @@ ranura HT[M];
             MissCount += 1 ;
         }
     };
+        
+/*****
+* void clean
+******
+* esta funcion se encarga de borrar la mitad de los elementos del hashing cuando esta se encuentra llena borrando los que tengan menos consultas registradas.
+******
+* Input:
+* 
+* .......
+******
+* Returns:
+* 
+*****/   
 
     void clean(){
         CleanCount += 1;
@@ -122,6 +190,20 @@ ranura HT[M];
         }
 
     }
+        
+/*****
+* bool query
+******
+* esta funcion se encarga de insertar los elementos en el hashing.
+******
+* Input:
+* string termino : termino seleccionado a insertar en el diccionario.
+  string significado: significado vinculado al termino.
+* .......
+******
+* Returns:
+* 
+*****/
 
     void insert(string termino, string significado){
         if(nElem == M){
@@ -142,12 +224,44 @@ ranura HT[M];
         }
 
     }
+        
+    /*****
+* bool querystats
+******
+* esta funcion retorna las estadisticas vinculadas a la funcion query como las consultas totales, las consultas con significado conocido y desconocidos.
+******
+* Input:
+* int &total : variable en donde se indicara el total de consultas realizadas hasta el momento.
+  int &conocidos: consultas realizadas a terminos con significados no vacios.
+  int &desconocidos: consultas realizadas a terminos con significados vacios.
+* .......
+******
+* Returns:
+* bool, retorna true si se encuentra el temrino en el diccionario en caso contrario se retorna un false.
+*****/
 
     void querystats(int &total, int &conocidos, int &desconocidos){
         total = Ctotal;
         conocidos = Cconocidos;
         desconocidos = Cdesconocidos;
     }
+        
+ /*****
+* bool querystats
+******
+* esta funcion retorna las estadisticas vinculadas a al rendimiento del TDA como la cantidad de veces que se borraron elementos para ingresar unos nuevos o
+  cuantas veces las consultas realizadas en el query estuvieron relacionadas a terminos existentes.
+******
+* Input:
+* int& accesses: cantidad de accesos a las ranuras del hashing
+  int& hits: cantidad de consultas a terminos existentes.
+  int& misses: cantidad de consultas a terminos no existentes.
+  int& cleanups: cantidad de veces que se borraron elementos de la tabla hashing.
+* .......
+******
+* Returns:
+* bool, retorna true si se encuentra el temrino en el diccionario en caso contrario se retorna un false.
+*****/
 
     void perfstats(int& accesses, int& hits, int& misses, int& cleanups){
         accesses = AcCount;
