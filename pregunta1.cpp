@@ -4,6 +4,7 @@
 #include <string>
 #include <math.h>
 #include "mergeSort.h"
+#include "minHeap.h"
 
 #define M 128
 
@@ -31,46 +32,52 @@ ranura HT[M];
 
     CacheDiccionario(){
         nElem = 0;
+        Ctotal = 0;
+        Cconocidos = 0;
+        Cdesconocidos = 0;
+        CleanCount = 0;
+        HitsCount = 0;
+        MissCount = 0;
+        AcCount = 0;
     }
 
-    int h(const char *t){
-        unsigned int *aux = (unsigned int *)t;
-        int len = strlen(t) / 4;
-        unsigned int sum = 0;
+    int h(string termino){
+        int contador= 0;
+        string word = "";
+        for(int i = 0; i < (termino.length() - (termino.length()%3)); i++){
+            if((i+1)%3 == 0){
+                contador += stoi(word);
+                word = "";
+            }
 
-        for(int i = 0; i < len; i++){
-            sum += aux[i];
+            int wordInt = termino[i];
+            for(int j = 0; j < to_string(wordInt).length(); j++){
+                word+= to_string(wordInt)[j];
+            }
+
         }
 
-        int extra = strlen(t) - len*4;
-        char temp[4];
-        aux = (unsigned int *)temp;
-        aux[0] = 0;
-        for(int i = 0; i < extra; i++){
-            temp[i] = t[len*4+i];
+        word = "";
+        int res = (termino.length() + (termino.length()%3)) - termino.length();
+        for(int i = termino.length() - res + 1; i < termino.length()+1 - res; i++){
+            int wordInt = termino[i];
+            for(int j = 0; j < to_string(wordInt).length(); j++){
+                word+= to_string(wordInt)[j];
+            }
+            contador += stoi(word);
         }
 
-        sum+= aux[0];
-
-        return sum % M;
-    }
-
-    int h2(string termino){
-        int contador = 0;
-        for(int i = 0; i < termino.length(); i++){
-            contador += termino[i];
-        }
-        return contador;
+        return contador % M;
     }
 
     unsigned long p(string termino, int i){
-        return i;
+        return i*i*2 + 5*i + 1;
     }
 
     bool query(string termino, string &significado){
         Ctotal += 1;
         int inicio;
-        int pos = inicio = h(termino.c_str());
+        int pos = inicio = h(termino);
         for(int i = 1; !HT[pos].termino.empty() && HT[pos].termino != termino; i++){
             pos = (inicio + p(termino, i)) % M;
             AcCount += 1 ;
@@ -93,43 +100,41 @@ ranura HT[M];
             MissCount += 1 ;
         }
     };
-        void clean(){
-        CleanCount += 1 ;
-        SortList list;
+
+    void clean(){
+        CleanCount += 1;
+        tColaP list;
+
         for(int i = 0; i<M;i++){
-            Index New;
+            nodo New;
             New.consultas = HT[i].consultas;
             New.key = i;
             
-            list.Insert(New);
+            list.insertColaP(New);
         }
-        Index *arr = list.sort();
 
         for(int i = 0; i<M/2;i++){
-            cout<<HT[arr[i].key].consultas<<endl;
-            HT[arr[i].key].termino = "";
-            HT[arr[i].key].definicion = "";
-            HT[arr[i].key].consultas = 0;
+            HT[list.findMin()].termino = "";
+            HT[list.findMin()].definicion = "";
+            HT[list.findMin()].consultas = 0;
+            list.removeMin();
             nElem-=1;
         }
 
-        list.clear();
     }
 
     void insert(string termino, string significado){
         if(nElem == M){
             clean();
-            cout<<"############################################################################################################"<<endl;
         }
         int inicio;
-        int pos = inicio = h(termino.c_str());
+        int pos = inicio = h(termino);
         for(int i = 1; !HT[pos].termino.empty() && HT[pos].termino != termino; i++){
             pos = (inicio + p(termino, i)) % M;
         }
 
         if(HT[pos].termino == termino){
             HT[pos].definicion = significado;
-
         }else{
             HT[pos].termino = termino;
             HT[pos].definicion = significado;
@@ -145,60 +150,10 @@ ranura HT[M];
     }
 
     void perfstats(int& accesses, int& hits, int& misses, int& cleanups){
-        accesses = AcCount
-        hits = HitsCount
-        misses = MissCount 
+        accesses = AcCount;
+        hits = HitsCount;
+        misses = MissCount; 
         cleanups = CleanCount;
         
     }
 };
-
-
-int main(){
-    
-    CacheDiccionario dictCache;
-
-    string s[10000];
-    for(int i = 0; i < 127; i++){
-        char ch = rand() % 253 + 33;
-        string p = "hash";
-        p += ch;
-        dictCache.insert(p, "i1");
-
-    }   
-
-    for(int i = 0; i < 10000; i++){
-        char ch = rand() % 254 + 33;
-        string p = "hash";
-        p += ch;
-        dictCache.query(p, s[i]);
-    }
-    for(int i = 0; i < 100; i++){
-        for(int i = 0; i < 64; i++){
-            char ch = rand() % 253 + 33;
-            string p = "hash";
-            p += ch;
-            dictCache.insert(p, "i1");
-        }   
-
-        for(int i = 0; i < 10000; i++){
-            char ch = rand() % 254 + 33;
-            string p = "hash";
-            p += ch;
-            dictCache.query(p, s[i]);
-        }
-    }
-
-    int conocidos;
-    int desconocidos;
-    int total;
-
-    dictCache.querystats(total, conocidos, desconocidos);
-    cout<<total<<endl;
-    cout<<conocidos<<endl;
-    cout<<desconocidos<<endl;
-
-    
-
-    return 0;
-}
